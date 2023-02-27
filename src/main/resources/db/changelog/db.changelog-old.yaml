@@ -1,0 +1,4 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/chg-001-create.sql
+

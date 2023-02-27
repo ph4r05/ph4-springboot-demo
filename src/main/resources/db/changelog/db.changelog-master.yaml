@@ -1,0 +1,67 @@
+databaseChangeLog:
+- changeSet:
+    id: 1676375350279-1
+    author: dusanklinec (generated)
+    changes:
+    - createSequence:
+        cacheSize: 1
+        cycle: false
+        dataType: bigint
+        incrementBy: 50
+        maxValue: 9223372036854775807
+        minValue: 1
+        sequenceName: test_entity_seq
+        startValue: 1
+- changeSet:
+    id: 1676375350279-2
+    author: dusanklinec (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: uploaded_file_pkey
+            name: id
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: av_check_status
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: checksum
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: name
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: path
+            type: VARCHAR(255)
+        tableName: uploaded_file
+- changeSet:
+    id: 1676375350279-3
+    author: dusanklinec (generated)
+    changes:
+    - addColumn:
+         tableName: uploaded_file
+         columns:
+            - column:
+                constraints:
+                  nullable: true
+                name: av_result
+                type: VARCHAR(255)
+            - column:
+                constraints:
+                  nullable: false
+                name: attempts
+                type: INTEGER
+                defaultValue: 0
+

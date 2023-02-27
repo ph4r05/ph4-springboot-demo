@@ -1,0 +1,80 @@
+version: '3.2'
+
+services:
+  database:
+    image: 'postgres:15.2'
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: demo_db
+    volumes:
+      - ./.docker-conf/db/data/:/var/lib/postgresql/data/
+      - ./.docker-conf/db/conf/databases.sql:/docker-entrypoint-initdb.d/1-dev-database.sql
+      - ./.docker-conf/db/conf/roles.sql:/docker-entrypoint-initdb.d/2-dev-roles.sql
+
+  clamav:
+    # image: rordi/docker-antivirus
+    # image: dinkel/clamavd
+    image: clamav/clamav:stable
+    container_name: clamav
+    cpu_count: 4
+    volumes:
+      - .docker-conf/clamav/db:/var/lib/clamav
+      - ./data:/data/av/tmp
+      - ./data-scan/scan:/data/av/scan
+      - ./data-scan/queue:/data/av/queue
+      - ./data-scan/ok:/data/av/ok
+      - ./data-scan/nok:/data/av/nok
+    ports:
+      - "3310:3310"
+      - "7357:7357"
+    environment:
+      - CLAMAV_NO_FRESHCLAMD=true
+    networks:
+      - clamav_net
+
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - mydata:/data
+    environment:
+      - MINIO_ROOT_USER=AKIAIOSFODNN7EXAMPLE
+      - MINIO_ROOT_PASSWORD=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+    command: server /data
+
+  redis:
+    image: "redis:alpine"
+    command: redis-server --requirepass sOmE_sEcUrE_pAsS
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./.docker-conf/redis/data:/var/lib/redis
+      - ./.docker-conf/redis/conf/redis.conf:/usr/local/etc/redis/redis.conf
+    environment:
+      - REDIS_REPLICATION_MODE=master
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - rabbitmq_go_net
+
+volumes:
+  mydata:
+
+networks:
+  rabbitmq_go_net:
+    driver: bridge
+  clamav_net:
+    driver: bridge

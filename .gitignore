@@ -38,4 +38,6 @@ out/
 
 ### Data ###
 .docker-conf/db/data
+.docker-conf/clamav/db
+.docker-conf/clamav/logs
 
